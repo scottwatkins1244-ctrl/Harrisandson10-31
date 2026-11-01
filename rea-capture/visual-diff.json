@@ -1,0 +1,158 @@
+[
+ {
+  "page": "/",
+  "viewport": "desktop",
+  "old": [
+   1440,
+   9779
+  ],
+  "new": [
+   1440,
+   9779
+  ],
+  "diff_pct": 1.534
+ },
+ {
+  "page": "/",
+  "viewport": "mobile",
+  "old": [
+   390,
+   11925
+  ],
+  "new": [
+   390,
+   11925
+  ],
+  "diff_pct": 1.547
+ },
+ {
+  "page": "/about-us/",
+  "viewport": "desktop",
+  "old": [
+   1440,
+   7623
+  ],
+  "new": [
+   1440,
+   7623
+  ],
+  "diff_pct": 1.917
+ },
+ {
+  "page": "/about-us/",
+  "viewport": "mobile",
+  "old": [
+   390,
+   7696
+  ],
+  "new": [
+   390,
+   7696
+  ],
+  "diff_pct": 0.443
+ },
+ {
+  "page": "/kitchen-remodeling/",
+  "viewport": "desktop",
+  "old": [
+   1440,
+   9664
+  ],
+  "new": [
+   1440,
+   9664
+  ],
+  "diff_pct": 0.022
+ },
+ {
+  "page": "/kitchen-remodeling/",
+  "viewport": "mobile",
+  "old": [
+   390,
+   11365
+  ],
+  "new": [
+   390,
+   11365
+  ],
+  "diff_pct": 0.031
+ },
+ {
+  "page": "/contact-us/",
+  "viewport": "desktop",
+  "old": [
+   1440,
+   3677
+  ],
+  "new": [
+   1440,
+   3677
+  ],
+  "diff_pct": 0.016
+ },
+ {
+  "page": "/contact-us/",
+  "viewport": "mobile",
+  "old": [
+   390,
+   4592
+  ],
+  "new": [
+   390,
+   4592
+  ],
+  "diff_pct": 0.041
+ },
+ {
+  "page": "/portfolio/",
+  "viewport": "desktop",
+  "old": [
+   1440,
+   900
+  ],
+  "new": [
+   1440,
+   900
+  ],
+  "diff_pct": 0
+ },
+ {
+  "page": "/portfolio/",
+  "viewport": "mobile",
+  "old": [
+   390,
+   844
+  ],
+  "new": [
+   390,
+   844
+  ],
+  "diff_pct": 0
+ },
+ {
+  "page": "/how-to-build-an-adu-on-my-existing-home/",
+  "viewport": "desktop",
+  "old": [
+   1440,
+   6793
+  ],
+  "new": [
+   1440,
+   6793
+  ],
+  "diff_pct": 0.007
+ },
+ {
+  "page": "/how-to-build-an-adu-on-my-existing-home/",
+  "viewport": "mobile",
+  "old": [
+   390,
+   10066
+  ],
+  "new": [
+   390,
+   10066
+  ],
+  "diff_pct": 0.014
+ }
+]

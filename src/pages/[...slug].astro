@@ -1,0 +1,13 @@
+---
+// Each page is the exact HTML document captured from harrisandsons.co,
+// emitted verbatim so content, head tags, schema and tracking stay 1:1.
+import fs from 'node:fs';
+import path from 'node:path';
+export function getStaticPaths() {
+  const root = path.resolve('src/content-raw');
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.json'), 'utf8'));
+  return manifest.map((p) => ({ params: { slug: p.slug || undefined }, props: { file: p.file } }));
+}
+const html = fs.readFileSync(path.resolve('src/content-raw', Astro.props.file), 'utf8');
+---
+<Fragment set:html={html} />
