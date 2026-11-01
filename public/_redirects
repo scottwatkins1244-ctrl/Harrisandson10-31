@@ -135,5 +135,3 @@
 /blog/ https://harrisandsons.co/blogs/ 301
 /blog/page/2 https://harrisandsons.co/blogs/ 301
 /blog/page/2/ https://harrisandsons.co/blogs/ 301
-/checkout/ https://harrisandsons.co/cart/ 302
-/checkout https://harrisandsons.co/cart/ 302

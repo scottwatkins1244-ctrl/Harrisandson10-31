@@ -1,3 +1,10 @@
+import { LM } from '../fn-lib/lm.js';
+import PAGE_TPL from '../fn-lib/tpl/page.html';
+import BLOGS_TPL from '../fn-lib/tpl/blogs-page.html';
+import SEARCH_KITCHEN from '../fn-lib/tpl/search-kitchen.html';
+import SEARCH_EMPTY from '../fn-lib/tpl/search-empty.html';
+import XMLRPC_403 from '../fn-lib/tpl/xmlrpc.html';
+import SELLKIT_403 from '../fn-lib/tpl/sellkit403.html';
 // Replicates live harrisandsons.co per-page response headers 1:1 (Link, Content-Type, Cache-Control).
 // Data captured from live on 2026-11-01. Headers live does not send are removed (e.g. /shop/ has no Cache-Control).
 const H = {
@@ -1356,18 +1363,91 @@ const H = {
 "Link": "<https://harrisandsons.co/wp-json/>; rel=\"https://api.w.org/\", <https://harrisandsons.co/wp-json/wp/v2/pages/4947>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\", <https://harrisandsons.co/?p=4947>; rel=shortlink"
 }
 };
-export async function onRequest({ request, next }) {
-  const res = await next();
+const API_LINK = '<https://harrisandsons.co/wp-json/>; rel="https://api.w.org/"';
+const HTML = 'text/html; charset=UTF-8';
+const PUB = 'public, max-age=2678400';
+const exp = (s) => new Date(Date.now() + s * 1000).toUTCString();
+const esc = (t) => t.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[c]));
+// No-slash URLs live 301s (absolute) with these headers; other known pages get the same WP canonical 301.
+const NOSLASH = {
+  '/cart': { 'Content-Type': HTML, 'Cache-Control': 'max-age=3600', ttl: 3600 },
+  '/checkout': { 'Content-Type': HTML, 'Cache-Control': 'max-age=3600', ttl: 3600 },
+  '/my-account': { 'Content-Type': HTML, 'Cache-Control': PUB, Vary: 'accept-encoding' },
+  '/feed': { 'Content-Type': 'application/rss+xml; charset=UTF-8', 'Cache-Control': PUB, Vary: 'accept-encoding', 'Last-Modified': 'Mon, 19 Oct 2026 19:36:10 GMT' },
+};
+function mk(body, status, headers) {
+  const h = new Headers();
+  for (const [k, v] of Object.entries(headers)) if (k !== 'ttl') h.set(k, v);
+  return new Response(body, { status, headers: h });
+}
+function htmlPage(body, link, lm) {
+  const h = { 'Content-Type': HTML, 'Cache-Control': PUB, Expires: exp(2678400), Link: link, Vary: 'Accept-Encoding' };
+  if (lm) h['Last-Modified'] = lm;
+  return mk(body, 200, h);
+}
+function finalize(res, url, extra) {
+  const out = new Response(res.body, res);
+  // Drop Pages' default headers that live does not send.
+  out.headers.delete('Access-Control-Allow-Origin');
+  out.headers.delete('Referrer-Policy');
+  if (extra) for (const [k, v] of Object.entries(extra)) out.headers.set(k, v);
+  if (url.hostname.endsWith('.pages.dev')) out.headers.set('X-Robots-Tag', 'noindex, nofollow');
+  return out;
+}
+
+export async function onRequest({ request, next, env }) {
   const url = new URL(request.url);
   const path = url.pathname;
-  const preview = url.hostname.endsWith('.pages.dev');
-  const h = H[path];
-  if (!h && !preview) return res;
+  const F = (r, x) => finalize(r, url, x);
+
+  if (path === '/wp-admin/admin-ajax.php')
+    return F(mk('0', 400, { 'Content-Type': HTML, 'Cache-Control': 'no-cache, must-revalidate, max-age=0, no-store, private', Expires: 'Wed, 11 Jan 1984 05:00:00 GMT', 'X-Robots-Tag': 'noindex' }));
+  if (path === '/xmlrpc.php')
+    return F(mk(XMLRPC_403, 403, { 'Content-Type': HTML, 'Cache-Control': 'private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0', Expires: 'Thu, 01 Jan 1970 00:00:01 GMT', 'X-Frame-Options': 'SAMEORIGIN' }), { 'Referrer-Policy': 'same-origin' });
+  if (path === '/wp-content/plugins/sellkit/assets/' || path === '/wp-content/plugins/sellkit/assets')
+    return F(mk(SELLKIT_403, 403, { 'Content-Type': 'text/html', Vary: 'Accept-Encoding' }));
+
+  const ns = NOSLASH[path] || (!path.endsWith('/') && H[path + '/'] ? { 'Content-Type': HTML, 'Cache-Control': PUB, Vary: 'accept-encoding' } : null);
+  if (ns) {
+    const ttl = ns.ttl || 2678400;
+    return F(mk(null, 301, { ...ns, Location: 'https://harrisandsons.co' + path + '/' + url.search, Expires: exp(ttl), 'X-Redirect-By': 'WordPress' }));
+  }
+  if (path === '/checkout/')
+    return F(mk(null, 302, { 'Content-Type': HTML, Location: 'https://harrisandsons.co/cart/', 'Cache-Control': 'no-cache, must-revalidate, max-age=0, private', Expires: 'Wed, 11 Jan 1984 05:00:00 GMT', Vary: 'accept-encoding', 'X-Redirect-By': 'WordPress' }));
+
+  // WordPress search (?s=) on the home URL.
+  if (path === '/' && url.searchParams.has('s')) {
+    const q = url.searchParams.get('s');
+    const body = q === 'kitchen' ? SEARCH_KITCHEN : SEARCH_EMPTY.split('__Q__').join(esc(q));
+    return F(htmlPage(body, API_LINK, 'Sun, 01 Nov 2026 18:21:08 GMT'));
+  }
+  // Paginated index pages (/page/N/, /blogs/page/N/) render the parent page for any N.
+  let m = path.match(/^\/page\/(\d+)\/$/);
+  if (m) return F(htmlPage(PAGE_TPL.split('__N__').join(m[1]), H['/'].Link, 'Sun, 01 Nov 2026 15:51:17 GMT'));
+  m = path.match(/^\/blogs\/page\/(\d+)\/$/);
+  if (m) return F(htmlPage(BLOGS_TPL.split('__N__').join(m[1]), H['/blogs/'].Link, LM['/blogs/']));
+
+  let res = await next();
+  let key = path;
+  // WordPress matches slugs case-insensitively (/About-Us/ serves /about-us/ with 200).
+  if (res.status === 404 && path !== path.toLowerCase() && H[path.toLowerCase()]) {
+    key = path.toLowerCase();
+    const u2 = new URL(url); u2.pathname = key;
+    res = await env.ASSETS.fetch(new Request(u2, request));
+  }
   const out = new Response(res.body, res);
-  if (!h) { out.headers.set('X-Robots-Tag', 'noindex, nofollow'); return out; }
-  for (const k of ['Link', 'Cache-Control', 'X-Robots-Tag']) { if (!(k in h)) out.headers.delete(k); }
-  for (const [k, v] of Object.entries(h)) out.headers.set(k, v);
-  // Preview-only (*.pages.dev): never indexable. Production (harrisandsons.co) is unchanged.
-  if (preview) out.headers.set('X-Robots-Tag', 'noindex, nofollow');
-  return out;
+  const h = H[key];
+  if (h) {
+    for (const k of ['Link', 'Cache-Control', 'X-Robots-Tag']) { if (!(k in h)) out.headers.delete(k); }
+    for (const [k, v] of Object.entries(h)) out.headers.set(k, v);
+  }
+  if (res.status === 404 && (out.headers.get('Content-Type') || '').startsWith('text/html')) {
+    out.headers.set('Cache-Control', PUB);
+    out.headers.set('Link', API_LINK);
+    out.headers.set('Expires', exp(2678400));
+  }
+  if (path === '/sitemap_index.xml') out.headers.set('Pragma', 'public');
+  if (LM[key]) out.headers.set('Last-Modified', LM[key]);
+  out.headers.set('Vary', 'Accept-Encoding');
+  return F(out);
 }
