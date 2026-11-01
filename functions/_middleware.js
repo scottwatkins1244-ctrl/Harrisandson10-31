@@ -1358,11 +1358,16 @@ const H = {
 };
 export async function onRequest({ request, next }) {
   const res = await next();
-  const path = new URL(request.url).pathname;
+  const url = new URL(request.url);
+  const path = url.pathname;
+  const preview = url.hostname.endsWith('.pages.dev');
   const h = H[path];
-  if (!h) return res;
+  if (!h && !preview) return res;
   const out = new Response(res.body, res);
+  if (!h) { out.headers.set('X-Robots-Tag', 'noindex, nofollow'); return out; }
   for (const k of ['Link', 'Cache-Control', 'X-Robots-Tag']) { if (!(k in h)) out.headers.delete(k); }
   for (const [k, v] of Object.entries(h)) out.headers.set(k, v);
+  // Preview-only (*.pages.dev): never indexable. Production (harrisandsons.co) is unchanged.
+  if (preview) out.headers.set('X-Robots-Tag', 'noindex, nofollow');
   return out;
 }
