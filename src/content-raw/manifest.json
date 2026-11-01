@@ -260,10 +260,6 @@
 "file": "cheap-remodeling.html"
 },
 {
-"slug": "checkout",
-"file": "checkout.html"
-},
-{
 "slug": "childs-rd-work",
 "file": "childs-rd-work.html"
 },
@@ -1030,5 +1026,61 @@
 {
 "slug": "work",
 "file": "work.html"
+},
+{
+"slug": "cart",
+"file": "cart.html"
+},
+{
+"slug": "my-account",
+"file": "my-account.html"
+},
+{
+"slug": "category/basement-resources",
+"file": "category_basement-resources.html"
+},
+{
+"slug": "category/addition-resources",
+"file": "category_addition-resources.html"
+},
+{
+"slug": "category/bathroom-resources",
+"file": "category_bathroom-resources.html"
+},
+{
+"slug": "category/contractors-guides",
+"file": "category_contractors-guides.html"
+},
+{
+"slug": "category/garage-conversions",
+"file": "category_garage-conversions.html"
+},
+{
+"slug": "category/general",
+"file": "category_general.html"
+},
+{
+"slug": "category/home-remodeling",
+"file": "category_home-remodeling.html"
+},
+{
+"slug": "category/kitchen-resources",
+"file": "category_kitchen-resources.html"
+},
+{
+"slug": "category/remodel",
+"file": "category_remodel.html"
+},
+{
+"slug": "category/remodeling-tips",
+"file": "category_remodeling-tips.html"
+},
+{
+"slug": "category/uncategorized",
+"file": "category_uncategorized.html"
+},
+{
+"slug": "category/resources",
+"file": "category_resources.html"
 }
 ]

@@ -1,0 +1,7 @@
+---
+// Live harrisandsons.co 404 page ("Page Not Found - Harris and Sons"), emitted verbatim.
+import fs from 'node:fs';
+import path from 'node:path';
+const html = fs.readFileSync(path.resolve('src/content-raw', '404.html'), 'utf8');
+---
+<Fragment set:html={html} />
