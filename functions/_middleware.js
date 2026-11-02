@@ -1,4 +1,5 @@
 import { LM } from '../fn-lib/lm.js';
+import WPSNAP from '../fn-lib/wpsnap.json';
 import PAGE_TPL from '../fn-lib/tpl/page.html';
 import BLOGS_TPL from '../fn-lib/tpl/blogs-page.html';
 import SEARCH_KITCHEN from '../fn-lib/tpl/search-kitchen.html';
@@ -1399,6 +1400,7 @@ export async function onRequest({ request, next, env }) {
   const url = new URL(request.url);
   const path = url.pathname;
   const F = (r, x) => finalize(r, url, x);
+  let OVR = null;
 
   if (path === '/wp-admin/admin-ajax.php')
     return F(mk('0', 400, { 'Content-Type': HTML, 'Cache-Control': 'no-cache, must-revalidate, max-age=0, no-store, private', Expires: 'Wed, 11 Jan 1984 05:00:00 GMT', 'X-Robots-Tag': 'noindex' }));
@@ -1407,6 +1409,23 @@ export async function onRequest({ request, next, env }) {
   if (path === '/wp-content/plugins/sellkit/assets/' || path === '/wp-content/plugins/sellkit/assets')
     return F(mk(SELLKIT_403, 403, { 'Content-Type': 'text/html', Vary: 'Accept-Encoding' }));
 
+  // WordPress feeds / wp-json / oEmbed: static snapshots of live responses (captured 2026-11-02).
+  if (path.startsWith('/_wpsnap/')) { const u0 = new URL(url); u0.pathname = '/__nonexistent_404__/'; u0.search=''; const r0 = await next(new Request(u0, request)); return F(new Response(r0.body, { status: 404, headers: r0.headers })); }
+  {
+    let snap = WPSNAP[path + url.search];
+    if (!snap && url.search) { const want = [...url.searchParams].map(x=>x.join('=')).sort().join('&'); for (const k in WPSNAP) { const i = k.indexOf('?'); if (i>0 && k.slice(0,i)===path && [...new URLSearchParams(k.slice(i+1))].map(x=>x.join('=')).sort().join('&')===want) { snap = WPSNAP[k]; break; } } }
+    let ovr = null;
+    if (snap && snap.o) { ovr = snap; snap = null; }
+    OVR = ovr;
+    if (snap) {
+      const u1 = new URL(url); u1.pathname = '/_wpsnap/' + snap.f + '.bin'; u1.search = '';
+      const a = await env.ASSETS.fetch(new Request(u1, request));
+      const hd = new Headers(); for (const [k, v] of Object.entries(snap.h)) hd.set(k, v);
+      if (!snap.h['vary']) hd.set('Vary', 'Accept-Encoding');
+      { const mm = /max-age=(\d+)/.exec(snap.h['cache-control'] || ''); if (snap.h['expires'] && mm) hd.set('Expires', exp(+mm[1])); }
+      return F(new Response(request.method === 'HEAD' ? null : a.body, { status: snap.s, headers: hd }));
+    }
+  }
   const ns = NOSLASH[path] || (!path.endsWith('/') && H[path + '/'] ? { 'Content-Type': HTML, 'Cache-Control': PUB, Vary: 'accept-encoding' } : null);
   if (ns) {
     const ttl = ns.ttl || 2678400;
@@ -1449,5 +1468,10 @@ export async function onRequest({ request, next, env }) {
   if (path === '/sitemap_index.xml') out.headers.set('Pragma', 'public');
   if (LM[key]) out.headers.set('Last-Modified', LM[key]);
   out.headers.set('Vary', 'Accept-Encoding');
+  const ov = OVR;
+  if (ov) {
+    for (const k of ['cache-control','link','last-modified','pragma','vary','content-type','expires','etag','referrer-policy','x-frame-options']) { if (ov.h[k] !== undefined) out.headers.set(k, ov.h[k]); else if (['link','pragma','last-modified','expires'].includes(k)) out.headers.delete(k); }
+    const mm = /max-age=(\d+)/.exec(ov.h['cache-control'] || ''); if (ov.h['expires'] && mm) out.headers.set('Expires', exp(+mm[1]));
+  }
   return F(out);
 }
