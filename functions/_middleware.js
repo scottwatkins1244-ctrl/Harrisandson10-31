@@ -1405,7 +1405,7 @@ export async function onRequest({ request, next, env }) {
   if (path === '/wp-admin/admin-ajax.php')
     return F(mk('0', 400, { 'Content-Type': HTML, 'Cache-Control': 'no-cache, must-revalidate, max-age=0, no-store, private', Expires: 'Wed, 11 Jan 1984 05:00:00 GMT', 'X-Robots-Tag': 'noindex' }));
   if (path === '/xmlrpc.php')
-    return F(mk(XMLRPC_403, 403, { 'Content-Type': HTML, 'Cache-Control': 'private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0', Expires: 'Thu, 01 Jan 1970 00:00:01 GMT', 'X-Frame-Options': 'SAMEORIGIN' }), { 'Referrer-Policy': 'same-origin' });
+    return F(mk(XMLRPC_403, 403, { 'Content-Type': HTML, 'Cache-Control': 'private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0', Expires: 'Thu, 01 Jan 1970 00:00:01 GMT', 'X-Frame-Options': 'SAMEORIGIN', Vary: 'Accept-Encoding' }), { 'Referrer-Policy': 'same-origin' });
   if (path === '/wp-content/plugins/sellkit/assets/' || path === '/wp-content/plugins/sellkit/assets')
     return F(mk(SELLKIT_403, 403, { 'Content-Type': 'text/html', Vary: 'Accept-Encoding' }));
 
@@ -1423,7 +1423,7 @@ export async function onRequest({ request, next, env }) {
       const hd = new Headers(); for (const [k, v] of Object.entries(snap.h)) hd.set(k, v);
       if (!snap.h['vary']) hd.set('Vary', 'Accept-Encoding');
       { const mm = /max-age=(\d+)/.exec(snap.h['cache-control'] || ''); if (snap.h['expires'] && mm) hd.set('Expires', exp(+mm[1])); }
-      return F(new Response(request.method === 'HEAD' ? null : a.body, { status: snap.s, headers: hd }));
+      return F(new Response(request.method === 'HEAD' ? null : a.body, { status: snap.s, headers: hd }), snap.h['referrer-policy'] ? { 'Referrer-Policy': snap.h['referrer-policy'] } : undefined);
     }
   }
   const ns = NOSLASH[path] || (!path.endsWith('/') && H[path + '/'] ? { 'Content-Type': HTML, 'Cache-Control': PUB, Vary: 'accept-encoding' } : null);
