@@ -10,6 +10,84 @@ import SELLKIT_403 from '../fn-lib/tpl/sellkit403.html';
 // Replicates live harrisandsons.co per-page response headers 1:1 (Link, Content-Type, Cache-Control).
 // Data captured from live on 2026-11-01. Headers live does not send are removed (e.g. /shop/ has no Cache-Control).
 const H = {
+"/404-error-page/": {
+"Content-Type": "text/html; charset=UTF-8",
+"Cache-Control": "public, max-age=2678400",
+"Link": "<https://harrisandsons.co/wp-json/>; rel=\"https://api.w.org/\", <https://harrisandsons.co/wp-json/wp/v2/pages/15383>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\", <https://harrisandsons.co/?p=15383>; rel=shortlink"
+},
+"/my-account/lost-password/": {
+"Content-Type": "text/html; charset=UTF-8",
+"Cache-Control": "public, max-age=2678400",
+"Link": "<https://harrisandsons.co/wp-json/>; rel=\"https://api.w.org/\", <https://harrisandsons.co/wp-json/wp/v2/pages/15449>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\", <https://harrisandsons.co/?p=15449>; rel=shortlink",
+"Content-Security-Policy": "frame-ancestors 'self';",
+"X-Frame-Options": "SAMEORIGIN",
+"X-Robots-Tag": "noindex"
+},
+"/thankyou/": {
+"Content-Type": "text/html; charset=UTF-8",
+"Cache-Control": "public, max-age=2678400",
+"Link": "<https://harrisandsons.co/wp-json/>; rel=\"https://api.w.org/\", <https://harrisandsons.co/wp-json/wp/v2/pages/15355>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\", <https://harrisandsons.co/?p=15355>; rel=shortlink"
+},
+"/category/addition-resources/page/2/": {
+"Content-Type": "text/html; charset=UTF-8",
+"Cache-Control": "public, max-age=2678400",
+"Link": "<https://harrisandsons.co/wp-json/>; rel=\"https://api.w.org/\", <https://harrisandsons.co/wp-json/wp/v2/categories/34>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\""
+},
+"/category/basement-resources/page/2/": {
+"Content-Type": "text/html; charset=UTF-8",
+"Cache-Control": "public, max-age=2678400",
+"Link": "<https://harrisandsons.co/wp-json/>; rel=\"https://api.w.org/\", <https://harrisandsons.co/wp-json/wp/v2/categories/35>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\""
+},
+"/category/bathroom-resources/page/2/": {
+"Content-Type": "text/html; charset=UTF-8",
+"Cache-Control": "public, max-age=2678400",
+"Link": "<https://harrisandsons.co/wp-json/>; rel=\"https://api.w.org/\", <https://harrisandsons.co/wp-json/wp/v2/categories/30>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\""
+},
+"/category/kitchen-resources/page/2/": {
+"Content-Type": "text/html; charset=UTF-8",
+"Cache-Control": "public, max-age=2678400",
+"Link": "<https://harrisandsons.co/wp-json/>; rel=\"https://api.w.org/\", <https://harrisandsons.co/wp-json/wp/v2/categories/32>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\""
+},
+"/category/contractors-guides/page/2/": {
+"Content-Type": "text/html; charset=UTF-8",
+"Cache-Control": "public, max-age=2678400",
+"Link": "<https://harrisandsons.co/wp-json/>; rel=\"https://api.w.org/\", <https://harrisandsons.co/wp-json/wp/v2/categories/31>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\""
+},
+"/category/contractors-guides/page/3/": {
+"Content-Type": "text/html; charset=UTF-8",
+"Cache-Control": "public, max-age=2678400",
+"Link": "<https://harrisandsons.co/wp-json/>; rel=\"https://api.w.org/\", <https://harrisandsons.co/wp-json/wp/v2/categories/31>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\""
+},
+"/category/remodeling-tips/page/2/": {
+"Content-Type": "text/html; charset=UTF-8",
+"Cache-Control": "public, max-age=2678400",
+"Link": "<https://harrisandsons.co/wp-json/>; rel=\"https://api.w.org/\", <https://harrisandsons.co/wp-json/wp/v2/categories/33>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\""
+},
+"/category/remodeling-tips/page/3/": {
+"Content-Type": "text/html; charset=UTF-8",
+"Cache-Control": "public, max-age=2678400",
+"Link": "<https://harrisandsons.co/wp-json/>; rel=\"https://api.w.org/\", <https://harrisandsons.co/wp-json/wp/v2/categories/33>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\""
+},
+"/category/remodeling-tips/page/4/": {
+"Content-Type": "text/html; charset=UTF-8",
+"Cache-Control": "public, max-age=2678400",
+"Link": "<https://harrisandsons.co/wp-json/>; rel=\"https://api.w.org/\", <https://harrisandsons.co/wp-json/wp/v2/categories/33>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\""
+},
+"/category/remodeling-tips/page/5/": {
+"Content-Type": "text/html; charset=UTF-8",
+"Cache-Control": "public, max-age=2678400",
+"Link": "<https://harrisandsons.co/wp-json/>; rel=\"https://api.w.org/\", <https://harrisandsons.co/wp-json/wp/v2/categories/33>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\""
+},
+"/category/uncategorized/page/2/": {
+"Content-Type": "text/html; charset=UTF-8",
+"Cache-Control": "public, max-age=2678400",
+"Link": "<https://harrisandsons.co/wp-json/>; rel=\"https://api.w.org/\", <https://harrisandsons.co/wp-json/wp/v2/categories/1>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\""
+},
+"/category/uncategorized/page/3/": {
+"Content-Type": "text/html; charset=UTF-8",
+"Cache-Control": "public, max-age=2678400",
+"Link": "<https://harrisandsons.co/wp-json/>; rel=\"https://api.w.org/\", <https://harrisandsons.co/wp-json/wp/v2/categories/1>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\""
+},
 "/": {
 "Content-Type": "text/html; charset=UTF-8",
 "Cache-Control": "public, max-age=2678400",

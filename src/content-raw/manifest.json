@@ -1082,5 +1082,65 @@
 {
 "slug": "category/resources",
 "file": "category_resources.html"
+},
+{
+"slug": "404-error-page",
+"file": "404-error-page.html"
+},
+{
+"slug": "my-account/lost-password",
+"file": "my-account_lost-password.html"
+},
+{
+"slug": "thankyou",
+"file": "thankyou.html"
+},
+{
+"slug": "category/addition-resources/page/2",
+"file": "category_addition-resources_page_2.html"
+},
+{
+"slug": "category/basement-resources/page/2",
+"file": "category_basement-resources_page_2.html"
+},
+{
+"slug": "category/bathroom-resources/page/2",
+"file": "category_bathroom-resources_page_2.html"
+},
+{
+"slug": "category/kitchen-resources/page/2",
+"file": "category_kitchen-resources_page_2.html"
+},
+{
+"slug": "category/contractors-guides/page/2",
+"file": "category_contractors-guides_page_2.html"
+},
+{
+"slug": "category/contractors-guides/page/3",
+"file": "category_contractors-guides_page_3.html"
+},
+{
+"slug": "category/remodeling-tips/page/2",
+"file": "category_remodeling-tips_page_2.html"
+},
+{
+"slug": "category/remodeling-tips/page/3",
+"file": "category_remodeling-tips_page_3.html"
+},
+{
+"slug": "category/remodeling-tips/page/4",
+"file": "category_remodeling-tips_page_4.html"
+},
+{
+"slug": "category/remodeling-tips/page/5",
+"file": "category_remodeling-tips_page_5.html"
+},
+{
+"slug": "category/uncategorized/page/2",
+"file": "category_uncategorized_page_2.html"
+},
+{
+"slug": "category/uncategorized/page/3",
+"file": "category_uncategorized_page_3.html"
 }
 ]
