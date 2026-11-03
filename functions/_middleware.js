@@ -5,6 +5,7 @@ import BLOGS_TPL from '../fn-lib/tpl/blogs-page.html';
 import SEARCH_KITCHEN from '../fn-lib/tpl/search-kitchen.html';
 import SEARCH_EMPTY from '../fn-lib/tpl/search-empty.html';
 import XMLRPC_403 from '../fn-lib/tpl/xmlrpc.html';
+import WP_LOGIN from '../fn-lib/tpl/wp-login.html';
 import SELLKIT_403 from '../fn-lib/tpl/sellkit403.html';
 // Replicates live harrisandsons.co per-page response headers 1:1 (Link, Content-Type, Cache-Control).
 // Data captured from live on 2026-11-01. Headers live does not send are removed (e.g. /shop/ has no Cache-Control).
@@ -1428,6 +1429,9 @@ export async function onRequest({ request, next, env }) {
     return F(mk('0', 400, { 'Content-Type': HTML, 'Cache-Control': 'no-cache, must-revalidate, max-age=0, no-store, private', Expires: 'Wed, 11 Jan 1984 05:00:00 GMT', 'X-Robots-Tag': 'noindex' }));
   if (path === '/xmlrpc.php')
     return F(mk(XMLRPC_403, 403, { 'Content-Type': HTML, 'Cache-Control': 'private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0', Expires: 'Thu, 01 Jan 1970 00:00:01 GMT', 'X-Frame-Options': 'SAMEORIGIN' }), { 'Referrer-Policy': 'same-origin' });
+  // Static capture of live /wp-login.php (2026-11-03). The form cannot log in.
+  if (path === '/wp-login.php')
+    return F(mk(WP_LOGIN, 200, { 'Content-Type': HTML, 'Cache-Control': 'no-cache, must-revalidate, max-age=0, no-store, private', 'Content-Security-Policy': "frame-ancestors 'self';", Expires: 'Wed, 11 Jan 1984 05:00:00 GMT', Vary: 'Accept-Encoding', 'X-Frame-Options': 'SAMEORIGIN', 'Set-Cookie': 'wordpress_test_cookie=WP%20Cookie%20check; path=/; secure; HttpOnly' }), { 'Referrer-Policy': 'strict-origin-when-cross-origin' });
   if (path === '/wp-content/plugins/sellkit/assets/' || path === '/wp-content/plugins/sellkit/assets')
     return F(mk(SELLKIT_403, 403, { 'Content-Type': 'text/html', Vary: 'Accept-Encoding' }));
 
@@ -1470,7 +1474,13 @@ export async function onRequest({ request, next, env }) {
     out.headers.set('Link', API_LINK);
     out.headers.set('Expires', exp(2678400));
   }
-  if (path === '/sitemap_index.xml') out.headers.set('Pragma', 'public');
+  // Live sends a one-month Expires (computed per request) on every HTML page except /shop/.
+  if (h && res.status === 200 && key !== '/shop/') {
+    const ma = /max-age=(\d+)/.exec(out.headers.get('Cache-Control') || '');
+    if (ma && +ma[1] > 0) out.headers.set('Expires', exp(+ma[1]));
+  }
+  if (path === '/sitemap_index.xml') { out.headers.set('Pragma', 'public'); out.headers.set('Expires', '0'); }
+  if (path === '/locations.kml') { out.headers.set('Pragma', 'public'); out.headers.set('Expires', exp(2678400)); }
   if (LM[key]) out.headers.set('Last-Modified', LM[key]);
   out.headers.set('Vary', 'Accept-Encoding');
   return F(out);
