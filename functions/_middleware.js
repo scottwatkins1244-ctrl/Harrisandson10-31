@@ -1,4 +1,5 @@
 import { LM } from '../fn-lib/lm.js';
+import { EP } from '../fn-lib/ep.js';
 import PAGE_TPL from '../fn-lib/tpl/page.html';
 import BLOGS_TPL from '../fn-lib/tpl/blogs-page.html';
 import SEARCH_KITCHEN from '../fn-lib/tpl/search-kitchen.html';
@@ -1399,6 +1400,29 @@ export async function onRequest({ request, next, env }) {
   const url = new URL(request.url);
   const path = url.pathname;
   const F = (r, x) => finalize(r, url, x);
+
+  // Static snapshots of live feed / wp-json / oEmbed endpoints (exact body, status, headers).
+  let epKey = path + url.search;
+  if (!EP[epKey] && url.searchParams.has('rest_route')) {
+    const u3 = new URLSearchParams(url.search); const rr = u3.get('rest_route'); u3.delete('rest_route');
+    const qs = u3.toString(); epKey = '/wp-json' + rr + (qs ? '?' + qs : '');
+  }
+  if (!EP[epKey]) { try { const d = decodeURIComponent(path + url.search); epKey = Object.keys(EP).find((k) => { try { return decodeURIComponent(k) === d; } catch { return false; } }) || epKey; } catch {} }
+  const ep = EP[epKey];
+  if (ep) {
+    const a = await env.ASSETS.fetch(new Request(new URL('/_ep/' + ep[0], url), { method: 'GET' }));
+    const h = new Headers();
+    for (const [k, v] of ep[2]) h.set(k, v);
+    const ma = /max-age=(\d+)/.exec(h.get('cache-control') || '');
+    if (h.has('expires') && ma) h.set('expires', exp(+ma[1]));
+    return F(new Response(request.method === 'HEAD' ? null : a.body, { status: ep[1], headers: h }));
+  }
+  if (path.startsWith('/_ep/')) {
+    const r404 = await env.ASSETS.fetch(new Request(new URL('/__no_such_page__/', url), request));
+    const o = new Response(r404.body, r404);
+    o.headers.set('Cache-Control', PUB); o.headers.set('Link', API_LINK); o.headers.set('Expires', exp(2678400)); o.headers.set('Vary', 'Accept-Encoding');
+    return F(o);
+  }
 
   if (path === '/wp-admin/admin-ajax.php')
     return F(mk('0', 400, { 'Content-Type': HTML, 'Cache-Control': 'no-cache, must-revalidate, max-age=0, no-store, private', Expires: 'Wed, 11 Jan 1984 05:00:00 GMT', 'X-Robots-Tag': 'noindex' }));
