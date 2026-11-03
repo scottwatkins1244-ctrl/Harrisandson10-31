@@ -976,7 +976,9 @@ const H = {
 "/my-account/": {
 "Content-Type": "text/html; charset=UTF-8",
 "Cache-Control": "no-cache, must-revalidate, max-age=0, private",
-"Link": "<https://harrisandsons.co/wp-json/>; rel=\"https://api.w.org/\", <https://harrisandsons.co/wp-json/wp/v2/pages/15449>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\", <https://harrisandsons.co/?p=15449>; rel=shortlink"
+"Link": "<https://harrisandsons.co/wp-json/>; rel=\"https://api.w.org/\", <https://harrisandsons.co/wp-json/wp/v2/pages/15449>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\", <https://harrisandsons.co/?p=15449>; rel=shortlink",
+"Content-Security-Policy": "frame-ancestors 'self';",
+"X-Frame-Options": "SAMEORIGIN"
 },
 "/other-services/": {
 "Content-Type": "text/html; charset=UTF-8",
@@ -1525,11 +1527,11 @@ export async function onRequest({ request, next, env }) {
   if (path === '/' && url.searchParams.has('s')) {
     const q = url.searchParams.get('s');
     const body = q === 'kitchen' ? SEARCH_KITCHEN : SEARCH_EMPTY.split('__Q__').join(esc(q));
-    return F(htmlPage(body, API_LINK, 'Sun, 01 Nov 2026 18:21:08 GMT'));
+    return F(htmlPage(body, API_LINK, 'Tue, 03 Nov 2026 16:30:40 GMT'));
   }
   // Paginated index pages (/page/N/, /blogs/page/N/) render the parent page for any N.
   let m = path.match(/^\/page\/(\d+)\/$/);
-  if (m) return F(htmlPage(PAGE_TPL.split('__N__').join(m[1]), H['/'].Link, 'Sun, 01 Nov 2026 15:51:17 GMT'));
+  if (m) return F(htmlPage(PAGE_TPL.split('__N__').join(m[1]), H['/'].Link, 'Tue, 03 Nov 2026 22:08:21 GMT'));
   m = path.match(/^\/blogs\/page\/(\d+)\/$/);
   if (m) return F(htmlPage(BLOGS_TPL.split('__N__').join(m[1]), H['/blogs/'].Link, LM['/blogs/']));
 
